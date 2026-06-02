@@ -18,18 +18,14 @@ from utils.prompts import (
     RESUME_ANALYZER_PROMPT,
 )
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Page Configuration
-# ─────────────────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="AI Career Guide",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Custom CSS — Dark Theme + Clean UI
-# ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 /* ── Global ──────────────────────────────────────────── */
@@ -141,9 +137,7 @@ hr { border-color: #2d3149; }
 </style>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Session State Initialisation
-# ─────────────────────────────────────────────────────────────────────────────
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []   # list of {"role": "user"|"ai", "content": str}
 
@@ -151,9 +145,7 @@ if "page" not in st.session_state:
     st.session_state.page = "Home"
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Sidebar Navigation
-# ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("##  AI Career Guide")
     st.markdown(f"<span class='stat-chip'>Model: {MODEL_NAME}</span>", unsafe_allow_html=True)
@@ -207,9 +199,7 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Page: Home
-# ─────────────────────────────────────────────────────────────────────────────
 if st.session_state.page == "Home":
     st.markdown("#  AI Career Guide")
     st.markdown("**Your personal AI-powered career mentor — powered by Gemini API**")
@@ -235,9 +225,7 @@ if st.session_state.page == "Home":
 
     
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Page: Career Chat
-# ─────────────────────────────────────────────────────────────────────────────
 elif st.session_state.page == "Career Chat":
     st.markdown("# " \
     " Career Chat")
@@ -300,9 +288,7 @@ elif st.session_state.page == "Career Chat":
             st.session_state.chat_history = []
             st.rerun()
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Page: Roadmap Generator
-# ─────────────────────────────────────────────────────────────────────────────
 elif st.session_state.page == "Roadmap Generator":
     st.markdown("# Roadmap Generator")
     st.markdown("Select your target role and experience level to get a customised learning roadmap.")
@@ -350,9 +336,8 @@ elif st.session_state.page == "Roadmap Generator":
             mime="text/markdown",
         )
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Page: Skill Analyzer
-# ─────────────────────────────────────────────────────────────────────────────
+
 elif st.session_state.page == "Skill Analyzer":
     st.markdown("# Skill Analyzer")
     st.markdown("Enter your current skills and target role. The AI will identify gaps and suggest next steps.")
@@ -414,9 +399,8 @@ elif st.session_state.page == "Skill Analyzer":
                 mime="text/markdown",
             )
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Page: Resume Analyzer
-# ─────────────────────────────────────────────────────────────────────────────
+ 
 elif st.session_state.page == "Resume Analyzer":
     st.markdown("# Resume Analyzer")
     st.markdown("Upload your resume PDF to get AI-powered ATS tips, skill gap analysis, and project recommendations.")
