@@ -1,8 +1,9 @@
 # utils/gemini_helper.py
-# Handles all communication with Gemini API natively using google-generativeai
-from google import genai
+# Handles all communication with Gemini API using the google-genai SDK
+
 import os
 import streamlit as st
+from google import genai
 
 
 # Configuration — change model name here
@@ -42,16 +43,15 @@ def get_api_key() -> str:
     return ""
 
 
-def configure_client() -> bool:
+def get_client() -> genai.Client | None:
     """
-    Configure the genai client with the retrieved API key.
-    Returns True if configured successfully, False otherwise.
+    Create and return a configured Gemini Client.
+    Returns None if no API key is available.
     """
     api_key = get_api_key()
     if not api_key:
-        return False
-    genai.configure(api_key=api_key)
-    return True
+        return None
+    return genai.Client(api_key=api_key)
 
 
 def generate_response(prompt: str) -> str:
@@ -59,15 +59,18 @@ def generate_response(prompt: str) -> str:
     Generate a single response from Gemini given a plain prompt string.
     Returns the full response text or an error message.
     """
-    if not configure_client():
+    client = get_client()
+    if not client:
         return (
             "⚠️ Gemini API Key not found. Please set the `GEMINI_API_KEY` environment variable "
             "or enter it in the sidebar."
         )
 
     try:
-        model = genai.GenerativeModel(MODEL_NAME)
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+        )
         return response.text
     except Exception as e:
         return f"❌ Error connecting to Gemini API: {str(e)}"
@@ -77,18 +80,21 @@ def generate_chat_response(system_prompt: str, user_message: str) -> str:
     """
     Generate a chat response with a system prompt and user message.
     """
-    if not configure_client():
+    client = get_client()
+    if not client:
         return (
             "⚠️ Gemini API Key not found. Please set the `GEMINI_API_KEY` environment variable "
             "or enter it in the sidebar."
         )
 
     try:
-        model = genai.GenerativeModel(
-            model_name=MODEL_NAME,
-            system_instruction=system_prompt
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=user_message,
+            config=genai.types.GenerateContentConfig(
+                system_instruction=system_prompt,
+            ),
         )
-        response = model.generate_content(user_message)
         return response.text
     except Exception as e:
         return f"❌ Error connecting to Gemini API: {str(e)}"
@@ -99,13 +105,16 @@ def stream_response(prompt: str):
     Generator that streams tokens one by one from Gemini.
     Designed for use with Streamlit's st.write_stream().
     """
-    if not configure_client():
+    client = get_client()
+    if not client:
         yield "⚠️ Gemini API Key not found. Please provide an API key."
         return
 
     try:
-        model = genai.GenerativeModel(MODEL_NAME)
-        response = model.generate_content(prompt, stream=True)
+        response = client.models.generate_content_stream(
+            model=MODEL_NAME,
+            contents=prompt,
+        )
         for chunk in response:
             if chunk.text:
                 yield chunk.text
@@ -118,13 +127,15 @@ def check_gemini_connection() -> tuple[bool, str]:
     Check if Gemini is accessible and the API key is valid.
     Returns (success: bool, message: str).
     """
-    if not configure_client():
+    client = get_client()
+    if not client:
         return False, "Gemini API Key is missing. Please configure it in the environment or sidebar."
 
     try:
-        model = genai.GenerativeModel(MODEL_NAME)
-        # Test request
-        response = model.generate_content("Say 'OK' in one word.")
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents="Say 'OK' in one word.",
+        )
         if response.text:
             return True, f"Connected to Gemini API successfully with model `{MODEL_NAME}`"
         return False, "Received empty response from Gemini API"
