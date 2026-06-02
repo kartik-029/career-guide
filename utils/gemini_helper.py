@@ -1,0 +1,132 @@
+# utils/gemini_helper.py
+# Handles all communication with Gemini API natively using google-generativeai
+from google import genai
+import os
+import streamlit as st
+
+
+# Configuration — change model name here
+MODEL_NAME = "gemini-2.5-flash"
+
+
+def load_env_file():
+    """Load key-value pairs from .env if it exists in the current directory."""
+    if os.path.exists(".env"):
+        try:
+            with open(".env", "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        key, val = line.split("=", 1)
+                        os.environ[key.strip()] = val.strip().strip('"').strip("'")
+        except Exception:
+            pass
+
+
+def get_api_key() -> str:
+    """
+    Retrieve Gemini API Key from environment or streamlit session state.
+    """
+    # Load .env file if available
+    load_env_file()
+
+    # 1. Check environment variable
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if api_key:
+        return api_key
+
+    # 2. Check Streamlit session state
+    if "gemini_api_key" in st.session_state:
+        return st.session_state.gemini_api_key
+
+    return ""
+
+
+def configure_client() -> bool:
+    """
+    Configure the genai client with the retrieved API key.
+    Returns True if configured successfully, False otherwise.
+    """
+    api_key = get_api_key()
+    if not api_key:
+        return False
+    genai.configure(api_key=api_key)
+    return True
+
+
+def generate_response(prompt: str) -> str:
+    """
+    Generate a single response from Gemini given a plain prompt string.
+    Returns the full response text or an error message.
+    """
+    if not configure_client():
+        return (
+            "⚠️ Gemini API Key not found. Please set the `GEMINI_API_KEY` environment variable "
+            "or enter it in the sidebar."
+        )
+
+    try:
+        model = genai.GenerativeModel(MODEL_NAME)
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"❌ Error connecting to Gemini API: {str(e)}"
+
+
+def generate_chat_response(system_prompt: str, user_message: str) -> str:
+    """
+    Generate a chat response with a system prompt and user message.
+    """
+    if not configure_client():
+        return (
+            "⚠️ Gemini API Key not found. Please set the `GEMINI_API_KEY` environment variable "
+            "or enter it in the sidebar."
+        )
+
+    try:
+        model = genai.GenerativeModel(
+            model_name=MODEL_NAME,
+            system_instruction=system_prompt
+        )
+        response = model.generate_content(user_message)
+        return response.text
+    except Exception as e:
+        return f"❌ Error connecting to Gemini API: {str(e)}"
+
+
+def stream_response(prompt: str):
+    """
+    Generator that streams tokens one by one from Gemini.
+    Designed for use with Streamlit's st.write_stream().
+    """
+    if not configure_client():
+        yield "⚠️ Gemini API Key not found. Please provide an API key."
+        return
+
+    try:
+        model = genai.GenerativeModel(MODEL_NAME)
+        response = model.generate_content(prompt, stream=True)
+        for chunk in response:
+            if chunk.text:
+                yield chunk.text
+    except Exception as e:
+        yield f"❌ Error: {str(e)}"
+
+
+def check_gemini_connection() -> tuple[bool, str]:
+    """
+    Check if Gemini is accessible and the API key is valid.
+    Returns (success: bool, message: str).
+    """
+    if not configure_client():
+        return False, "Gemini API Key is missing. Please configure it in the environment or sidebar."
+
+    try:
+        model = genai.GenerativeModel(MODEL_NAME)
+        # Test request
+        response = model.generate_content("Say 'OK' in one word.")
+        if response.text:
+            return True, f"Connected to Gemini API successfully with model `{MODEL_NAME}`"
+        return False, "Received empty response from Gemini API"
+    except Exception as e:
+        return False, f"Cannot connect to Gemini API: {str(e)}"

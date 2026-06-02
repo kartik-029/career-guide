@@ -1,0 +1,15 @@
+# AI Career Guide — Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# ── Streamlit ─────────────────────────────────────────
+streamlit>=1.35.0
+
+# ── Gemini Integration ──────────────────────────────
+google-generativeai>=0.8.0
+
+# ── PDF Parsing ───────────────────────────────────────
+pdfplumber>=0.11.0
+PyMuPDF>=1.24.0          # optional fallback (fitz)
+
+# ── Utilities ─────────────────────────────────────────
+requests>=2.31.0          # used internally by gemini helper

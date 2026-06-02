@@ -1,0 +1,7 @@
+[server]
+# The port where the Streamlit server will run (default is 8501)
+port = 8080
+
+# The address where the Streamlit server will bind (default is localhost)
+# "0.0.0.0" makes the server accessible from other machines on the same network
+address = "0.0.0.0"
