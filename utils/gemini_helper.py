@@ -2,7 +2,8 @@
 # Handles all communication with Gemini API using the google-genai SDK
 
 import os
-import streamlit as st
+import streamlit as st # type: ignore
+# pyrefly: ignore [missing-import]
 from google import genai
 
 

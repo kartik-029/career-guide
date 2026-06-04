@@ -1,7 +1,7 @@
 # app.py — AI Career Guide
 # Run: streamlit run app.py
 
-import streamlit as st
+import streamlit as st # type: ignore
 from utils.gemini_helper import (
     generate_response,
     generate_chat_response,
@@ -168,13 +168,13 @@ with st.sidebar:
     st.markdown("---")
 
     # Gemini Configuration
-    st.markdown("### ⚙️ Gemini Setup")
+    st.markdown("###  Gemini Setup")
     import os
     load_env_file()  # Ensure .env variables are loaded into os.environ
     env_key = os.environ.get("GEMINI_API_KEY", "")
 
     if env_key:
-        st.success("🔑 API Key loaded from environment / .env")
+        st.success(" API Key loaded from environment / .env")
     else:
         user_key = st.text_input(
             "Enter Gemini API Key",
@@ -209,7 +209,7 @@ if st.session_state.page == "Home":
 
     features = [
         ( "Career Chat", "Have a free-form conversation with your AI career mentor. Ask anything about tech careers, job switching, or interview prep."),
-        ( "Roadmap Generator", "Select a target role and your current level. Get a detailed, phase-by-phase learning roadmap with projects and resources."),
+        ( "Roadmap Generator", "Select a target role and your current level. Get a detailed, learning roadmap with projects and resources."),
         ( "Skill Analyzer", "Enter your current skills and dream role. The AI will identify gaps and suggest a personalised action plan."),
         ( "Resume Analyzer", "Upload your PDF resume. Get ATS optimisation tips, missing skills, and project recommendations."),
     ]
