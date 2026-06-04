@@ -63,7 +63,7 @@ def generate_response(prompt: str) -> str:
     client = get_client()
     if not client:
         return (
-            "⚠️ Gemini API Key not found. Please set the `GEMINI_API_KEY` environment variable "
+            " Gemini API Key not found. Please set the `GEMINI_API_KEY` environment variable "
             "or enter it in the sidebar."
         )
 
@@ -74,7 +74,7 @@ def generate_response(prompt: str) -> str:
         )
         return response.text
     except Exception as e:
-        return f"❌ Error connecting to Gemini API: {str(e)}"
+        return f" Error connecting to Gemini API: {str(e)}"
 
 
 def generate_chat_response(system_prompt: str, user_message: str) -> str:
@@ -84,7 +84,7 @@ def generate_chat_response(system_prompt: str, user_message: str) -> str:
     client = get_client()
     if not client:
         return (
-            "⚠️ Gemini API Key not found. Please set the `GEMINI_API_KEY` environment variable "
+            " Gemini API Key not found. Please set the `GEMINI_API_KEY` environment variable "
             "or enter it in the sidebar."
         )
 
@@ -98,7 +98,7 @@ def generate_chat_response(system_prompt: str, user_message: str) -> str:
         )
         return response.text
     except Exception as e:
-        return f"❌ Error connecting to Gemini API: {str(e)}"
+        return f" Error connecting to Gemini API: {str(e)}"
 
 
 def stream_response(prompt: str):
@@ -108,7 +108,7 @@ def stream_response(prompt: str):
     """
     client = get_client()
     if not client:
-        yield "⚠️ Gemini API Key not found. Please provide an API key."
+        yield " Gemini API Key not found. Please provide an API key."
         return
 
     try:
@@ -120,7 +120,7 @@ def stream_response(prompt: str):
             if chunk.text:
                 yield chunk.text
     except Exception as e:
-        yield f"❌ Error: {str(e)}"
+        yield f" Error: {str(e)}"
 
 
 def check_gemini_connection() -> tuple[bool, str]:
