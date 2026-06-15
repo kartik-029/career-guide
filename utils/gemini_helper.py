@@ -2,9 +2,8 @@
 # Handles all communication with Gemini API using the google-genai SDK
 
 import os
-import streamlit as st # type: ignore
-# pyrefly: ignore [missing-import]
-from google import genai
+import streamlit as st  # type: ignore
+from google import genai # type: ignore
 
 
 # Configuration — change model name here
@@ -50,8 +49,10 @@ def get_client() -> genai.Client | None:
     Returns None if no API key is available.
     """
     api_key = get_api_key()
+
     if not api_key:
         return None
+
     return genai.Client(api_key=api_key)
 
 
